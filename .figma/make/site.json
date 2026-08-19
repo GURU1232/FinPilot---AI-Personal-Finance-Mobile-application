@@ -1,0 +1,10 @@
+{
+  "description": "Manage finances effortlessly with AI-driven budgeting, goal tracking, debt management, and personalized insights for smarter financial planning.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
