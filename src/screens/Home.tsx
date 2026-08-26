@@ -80,7 +80,7 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
         <View style={styles.topRow}>
           <View>
             <Text style={styles.greetingText}>Good morning</Text>
-            <Text style={styles.userName}>{user.firstName} 👋</Text>
+            {/* <Text style={styles.userName}>{user.firstName} </Text> */}
           </View>
           <View style={styles.headerRight}>
             <Pressable
