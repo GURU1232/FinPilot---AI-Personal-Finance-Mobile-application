@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Circle } from "react-native-svg";
 import { BellIcon, SparkleIcon } from "../components/ui/Icons";
-import { user, transactions, budgets, goals, cashflowData } from "../data/mockData";
+import { transactions, budgets, goals, cashflowData } from "../data/mockData";
+import { useUser } from "../context/UserContext";
+import { useTheme } from "../context/ThemeContext";
 
 function CircularScore({ score }: { score: number }) {
   const radius = 52;
@@ -63,7 +65,8 @@ function MiniBarChart() {
 }
 
 export default function Home({ onNavigate }: { onNavigate: (id: string) => void }) {
-  const [showNotif, setShowNotif] = useState(false);
+  const { user } = useUser();
+  const { colors } = useTheme();
 
   const fmt = (n: number) => `₹${Math.abs(n).toLocaleString("en-IN")}`;
 
@@ -74,25 +77,34 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={{ paddingBottom: 100 }}>
       {/* Header */}
-      <LinearGradient colors={["#0f172a", "#1e3a5f"]} style={styles.header}>
+      <LinearGradient colors={colors.headerBg as [string, string]} style={styles.header}>
         <View style={styles.topRow}>
           <View>
             <Text style={styles.greetingText}>Good morning</Text>
-            {/* <Text style={styles.userName}>{user.firstName} </Text> */}
+            <Text style={styles.userName}>{user.firstName}</Text>
           </View>
           <View style={styles.headerRight}>
             <Pressable
-              onPress={() => setShowNotif(!showNotif)}
+              onPress={() => onNavigate("notifications")}
               style={styles.iconBtn}
             >
               <BellIcon size={20} color="#ffffff" />
               <View style={styles.notifBadge} />
             </Pressable>
-            <View style={styles.avatarBtn}>
-              <Text style={styles.avatarText}>{user.avatar}</Text>
-            </View>
+
+            {/* Clickable Functional Profile Icon */}
+            <Pressable
+              onPress={() => onNavigate("profile")}
+              style={styles.avatarBtn}
+            >
+              {user.profileImage ? (
+                <Image source={{ uri: user.profileImage }} style={styles.avatarImgHeader} />
+              ) : (
+                <Text style={styles.avatarText}>{user.avatar}</Text>
+              )}
+            </Pressable>
           </View>
         </View>
 
@@ -124,17 +136,17 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
 
       <View style={styles.body}>
         {/* Cashflow Chart */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Cash Flow</Text>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Cash Flow</Text>
             <View style={styles.legendRow}>
               <View style={styles.legendItem}>
                 <View style={[styles.legendDot, { backgroundColor: "#10b981" }]} />
-                <Text style={styles.legendText}>Income</Text>
+                <Text style={[styles.legendText, { color: colors.textMuted }]}>Income</Text>
               </View>
               <View style={styles.legendItem}>
                 <View style={[styles.legendDot, { backgroundColor: "#ef4444" }]} />
-                <Text style={styles.legendText}>Expenses</Text>
+                <Text style={[styles.legendText, { color: colors.textMuted }]}>Expenses</Text>
               </View>
             </View>
           </View>
@@ -142,11 +154,11 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
         </View>
 
         {/* Budget Preview */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Budget This Month</Text>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Budget This Month</Text>
             <Pressable onPress={() => onNavigate("budget")}>
-              <Text style={styles.linkText}>View all</Text>
+              <Text style={[styles.linkText, { color: colors.accent }]}>View all</Text>
             </Pressable>
           </View>
           <View style={styles.budgetList}>
@@ -158,14 +170,14 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
                   <View style={styles.budgetRow}>
                     <View style={styles.budgetCat}>
                       <Text style={{ fontSize: 14 }}>{b.icon}</Text>
-                      <Text style={styles.budgetName}>{b.category}</Text>
+                      <Text style={[styles.budgetName, { color: colors.textPrimary }]}>{b.category}</Text>
                     </View>
-                    <Text style={[styles.budgetAmount, { color: over ? "#ef4444" : "#0f172a" }]}>
+                    <Text style={[styles.budgetAmount, { color: over ? "#ef4444" : colors.textPrimary }]}>
                       ₹{b.spent.toLocaleString("en-IN")}
-                      <Text style={{ color: "#94a3b8", fontWeight: "normal" }}>/{b.limit.toLocaleString("en-IN")}</Text>
+                      <Text style={{ color: colors.textMuted, fontWeight: "normal" }}>/{b.limit.toLocaleString("en-IN")}</Text>
                     </Text>
                   </View>
-                  <View style={styles.progressTrack}>
+                  <View style={[styles.progressTrack, { backgroundColor: colors.isDark ? "#2a2a36" : "#f1f5f9" }]}>
                     <View
                       style={[
                         styles.progressBar,
@@ -183,21 +195,21 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
         </View>
 
         {/* Goals Preview */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Goals Progress</Text>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Goals Progress</Text>
             <Pressable onPress={() => onNavigate("goals")}>
-              <Text style={styles.linkText}>View all</Text>
+              <Text style={[styles.linkText, { color: colors.accent }]}>View all</Text>
             </Pressable>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
             {goals.slice(0, 3).map((g) => {
               const pct = Math.round((g.current / g.target) * 100);
               return (
-                <View key={g.id} style={styles.goalMiniCard}>
+                <View key={g.id} style={[styles.goalMiniCard, { backgroundColor: colors.isDark ? "#181820" : "#f8fafc", borderColor: colors.cardBorder }]}>
                   <Text style={{ fontSize: 20 }}>{g.icon}</Text>
-                  <Text style={styles.goalName} numberOfLines={1}>{g.name}</Text>
-                  <View style={styles.goalTrack}>
+                  <Text style={[styles.goalName, { color: colors.textPrimary }]} numberOfLines={1}>{g.name}</Text>
+                  <View style={[styles.goalTrack, { backgroundColor: colors.isDark ? "#2a2a36" : "#e2e8f0" }]}>
                     <View style={[styles.goalBar, { width: `${pct}%`, backgroundColor: g.color }]} />
                   </View>
                   <Text style={[styles.goalPct, { color: g.color }]}>{pct}%</Text>
@@ -243,11 +255,11 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
         </LinearGradient>
 
         {/* Recent Transactions */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Recent Activity</Text>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Recent Activity</Text>
             <Pressable onPress={() => onNavigate("transactions")}>
-              <Text style={styles.linkText}>See all</Text>
+              <Text style={[styles.linkText, { color: colors.accent }]}>See all</Text>
             </Pressable>
           </View>
           <View style={styles.txList}>
@@ -257,10 +269,10 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
                   <Text style={{ fontSize: 16 }}>{t.icon}</Text>
                 </View>
                 <View style={styles.txMeta}>
-                  <Text style={styles.txMerchant} numberOfLines={1}>{t.merchant}</Text>
-                  <Text style={styles.txSub}>{t.category} • {t.date}</Text>
+                  <Text style={[styles.txMerchant, { color: colors.textPrimary }]} numberOfLines={1}>{t.merchant}</Text>
+                  <Text style={[styles.txSub, { color: colors.textMuted }]}>{t.category} • {t.date}</Text>
                 </View>
-                <Text style={[styles.txAmount, { color: t.amount > 0 ? "#059669" : "#0f172a" }]}>
+                <Text style={[styles.txAmount, { color: t.amount > 0 ? "#059669" : colors.textPrimary }]}>
                   {t.amount > 0 ? "+" : ""}₹{Math.abs(t.amount).toLocaleString("en-IN")}
                 </Text>
               </View>
@@ -268,7 +280,7 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
           </View>
         </View>
 
-        {/* Quick Access */}
+        {/* Quick Access Grid */}
         <View style={styles.quickGrid}>
           {[
             { label: "Debt", emoji: "💳", id: "debt" },
@@ -276,9 +288,13 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
             { label: "Health", emoji: "❤️", id: "health" },
             { label: "Profile", emoji: "👤", id: "profile" },
           ].map((q) => (
-            <Pressable key={q.id} onPress={() => onNavigate(q.id)} style={styles.quickCard}>
+            <Pressable
+              key={q.id}
+              onPress={() => onNavigate(q.id)}
+              style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+            >
               <Text style={{ fontSize: 22 }}>{q.emoji}</Text>
-              <Text style={styles.quickLabel}>{q.label}</Text>
+              <Text style={[styles.quickLabel, { color: colors.textMuted }]}>{q.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -288,16 +304,17 @@ export default function Home({ onNavigate }: { onNavigate: (id: string) => void 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafc" },
+  container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingTop: 40, paddingBottom: 24 },
   topRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 24 },
-  greetingText: { fontSize: 14, color: "rgba(255,255,255,0.55)" },
+  greetingText: { fontSize: 13, color: "rgba(255,255,255,0.6)" },
   userName: { fontSize: 20, fontWeight: "bold", color: "#ffffff" },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 12 },
-  iconBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center", position: "relative" },
+  iconBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center", position: "relative" },
   notifBadge: { position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: "#ef4444" },
-  avatarBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: "#6366f1", alignItems: "center", justifyContent: "center" },
-  avatarText: { fontSize: 14, fontWeight: "bold", color: "#ffffff" },
+  avatarBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#6366f1", alignItems: "center", justifyContent: "center", overflow: "hidden", borderWidth: 2, borderColor: "#eab308" },
+  avatarImgHeader: { width: "100%", height: "100%", borderRadius: 22 },
+  avatarText: { fontSize: 16, fontWeight: "bold", color: "#ffffff" },
   healthCard: { borderRadius: 20, padding: 16, backgroundColor: "rgba(255,255,255,0.07)", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   healthRow: { flexDirection: "row", alignItems: "center", gap: 16 },
   scoreContainer: { width: 128, height: 128, alignItems: "center", justifyContent: "center", position: "relative" },
@@ -312,32 +329,32 @@ const styles = StyleSheet.create({
   statSubLabel: { fontSize: 11, color: "rgba(255,255,255,0.5)" },
   statVal: { fontSize: 12, fontWeight: "600" },
   body: { paddingHorizontal: 20, paddingTop: 20, gap: 20 },
-  card: { backgroundColor: "#ffffff", borderRadius: 20, padding: 16, elevation: 2, shadowColor: "#0f172a", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8 },
+  card: { borderRadius: 20, padding: 16, borderWidth: 1, elevation: 2, shadowColor: "#0f172a", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8 },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  cardTitle: { fontSize: 14, fontWeight: "600", color: "#0f172a" },
-  linkText: { fontSize: 12, fontWeight: "500", color: "#6366f1" },
+  cardTitle: { fontSize: 14, fontWeight: "600" },
+  linkText: { fontSize: 12, fontWeight: "600" },
   legendRow: { flexDirection: "row", gap: 12 },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 4 },
   legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText: { fontSize: 10, color: "#64748b" },
+  legendText: { fontSize: 10 },
   chartContainer: { flexDirection: "row", alignItems: "flex-end", height: 64, gap: 6 },
   chartColumn: { flex: 1, alignItems: "center", gap: 4 },
   barPair: { flex: 1, width: "100%", flexDirection: "row", alignItems: "flex-end", gap: 2, height: 48 },
   incomeBar: { flex: 1, borderRadius: 2, backgroundColor: "#10b981", opacity: 0.9 },
   expenseBar: { flex: 1, borderRadius: 2, backgroundColor: "#ef4444", opacity: 0.7 },
-  monthLabel: { fontSize: 9, color: "rgba(15,23,42,0.5)" },
+  monthLabel: { fontSize: 9, color: "rgba(148,163,184,0.8)" },
   budgetList: { gap: 12 },
   budgetItem: { gap: 4 },
   budgetRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   budgetCat: { flexDirection: "row", alignItems: "center", gap: 8 },
-  budgetName: { fontSize: 12, fontWeight: "500", color: "#334155" },
+  budgetName: { fontSize: 12, fontWeight: "500" },
   budgetAmount: { fontSize: 12, fontWeight: "600" },
-  progressTrack: { height: 6, borderRadius: 3, backgroundColor: "#f1f5f9" },
+  progressTrack: { height: 6, borderRadius: 3 },
   progressBar: { height: "100%", borderRadius: 3 },
   horizontalScroll: { flexDirection: "row" },
-  goalMiniCard: { width: 112, borderRadius: 16, padding: 12, backgroundColor: "#f8fafc", borderWidth: 1, borderColor: "#f1f5f9", marginRight: 12 },
-  goalName: { fontSize: 12, fontWeight: "500", color: "#334155", marginTop: 4, marginBottom: 8 },
-  goalTrack: { height: 6, borderRadius: 3, backgroundColor: "#e2e8f0", marginBottom: 6 },
+  goalMiniCard: { width: 112, borderRadius: 16, padding: 12, borderWidth: 1, marginRight: 12 },
+  goalName: { fontSize: 12, fontWeight: "500", marginTop: 4, marginBottom: 8 },
+  goalTrack: { height: 6, borderRadius: 3, marginBottom: 6 },
   goalBar: { height: "100%", borderRadius: 3 },
   goalPct: { fontSize: 12, fontWeight: "bold" },
   aiCard: { borderRadius: 20, padding: 16 },
@@ -353,10 +370,10 @@ const styles = StyleSheet.create({
   txItem: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 6 },
   txIconBg: { width: 36, height: 36, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   txMeta: { flex: 1 },
-  txMerchant: { fontSize: 12, fontWeight: "600", color: "#0f172a" },
-  txSub: { fontSize: 10, color: "#94a3b8" },
+  txMerchant: { fontSize: 12, fontWeight: "600" },
+  txSub: { fontSize: 10 },
   txAmount: { fontSize: 12, fontWeight: "bold" },
   quickGrid: { flexDirection: "row", gap: 8, paddingBottom: 16 },
-  quickCard: { flex: 1, backgroundColor: "#ffffff", borderRadius: 16, padding: 12, alignItems: "center", gap: 6, elevation: 1 },
-  quickLabel: { fontSize: 10, fontWeight: "500", color: "#64748b" },
+  quickCard: { flex: 1, borderRadius: 16, padding: 12, alignItems: "center", gap: 6, borderWidth: 1, elevation: 1 },
+  quickLabel: { fontSize: 10, fontWeight: "500" },
 });

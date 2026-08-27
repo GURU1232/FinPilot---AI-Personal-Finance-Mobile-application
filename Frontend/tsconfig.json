@@ -17,12 +17,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "Frontend/src/*"
+        "src/*"
       ]
     }
   },
   "include": [
-    "Frontend/src",
+    "src",
     "index.js"
   ],
   "extends": "expo/tsconfig.base"

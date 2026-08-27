@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { HomeIcon, TransactionIcon, BudgetIcon, GoalsIcon, AIIcon } from "../ui/Icons";
+import { useTheme } from "../../context/ThemeContext";
 
 const tabs = [
   { id: "home", label: "Home", Icon: HomeIcon },
@@ -12,13 +13,15 @@ const tabs = [
 ];
 
 export default function BottomNav({ active, onNavigate }: { active: string; onNavigate: (id: string) => void }) {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.navBg, borderTopColor: colors.navBorder }]}>
       <View style={styles.tabBar}>
         {tabs.map(({ id, label, Icon }) => {
           const isActive = active === id;
           const isAI = id === "ai";
-          const iconColor = isAI ? "#ffffff" : isActive ? "#6366f1" : "#94a3b8";
+          const iconColor = isAI ? "#ffffff" : isActive ? colors.accent : colors.textMuted;
           return (
             <Pressable
               key={id}
@@ -29,7 +32,7 @@ export default function BottomNav({ active, onNavigate }: { active: string; onNa
                 <LinearGradient
                   colors={
                     isActive
-                      ? ["#7c3aed", "#6366f1", "#3b82f6"]
+                      ? [colors.accent, "#6366f1", "#3b82f6"]
                       : ["#0f172a", "#1e3a5f"]
                   }
                   start={{ x: 0, y: 0 }}
@@ -44,12 +47,12 @@ export default function BottomNav({ active, onNavigate }: { active: string; onNa
               <Text
                 style={[
                   styles.tabLabel,
-                  { color: isAI ? (isActive ? "#6366f1" : "#64748b") : isActive ? "#6366f1" : "#94a3b8" },
+                  { color: isAI ? (isActive ? colors.accent : colors.textMuted) : isActive ? colors.accent : colors.textMuted },
                 ]}
               >
                 {label}
               </Text>
-              {isActive && !isAI && <View style={styles.activeDot} />}
+              {isActive && !isAI && <View style={[styles.activeDot, { backgroundColor: colors.accent }]} />}
             </Pressable>
           );
         })}
@@ -64,9 +67,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#ffffff",
     borderTopWidth: 1,
-    borderTopColor: "rgba(15,23,42,0.06)",
     elevation: 8,
     shadowColor: "#0f172a",
     shadowOffset: { width: 0, height: -4 },
@@ -111,7 +112,6 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#6366f1",
     marginTop: 2,
   },
 });

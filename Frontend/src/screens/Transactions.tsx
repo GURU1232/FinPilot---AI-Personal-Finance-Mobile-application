@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Modal } from 
 import { LinearGradient } from "expo-linear-gradient";
 import { SearchIcon, FilterIcon, PlusIcon, CloseIcon } from "../components/ui/Icons";
 import { transactions } from "../data/mockData";
+import { useTheme } from "../context/ThemeContext";
 
 const months = ["August 2024", "July 2024", "June 2024", "May 2024"];
 const categories = ["All", "Food", "Shopping", "Income", "Travel", "Subscriptions", "Groceries", "Bill"];
 
 export default function Transactions() {
+  const { colors } = useTheme();
   const [selectedMonth, setSelectedMonth] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [search, setSearch] = useState("");
@@ -23,10 +25,10 @@ export default function Transactions() {
   const totalExpense = filtered.filter(t => t.amount < 0).reduce((a, t) => a + Math.abs(t.amount), 0);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
-        <LinearGradient colors={["#0f172a", "#1e3a5f"]} style={styles.header}>
+        <LinearGradient colors={colors.headerBg as [string, string]} style={styles.header}>
           <View style={styles.topRow}>
             <Text style={styles.title}>Transactions</Text>
             <Pressable onPress={() => setShowAdd(true)} style={styles.addBtn}>
@@ -72,59 +74,62 @@ export default function Transactions() {
         <View style={styles.body}>
           {/* Search + Filter */}
           <View style={styles.searchRow}>
-            <View style={styles.searchBox}>
-              <SearchIcon size={16} color="#94a3b8" />
+            <View style={[styles.searchBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <SearchIcon size={16} color={colors.textMuted} />
               <TextInput
                 value={search}
                 onChangeText={setSearch}
                 placeholder="Search transactions..."
-                placeholderTextColor="#94a3b8"
-                style={styles.searchInput}
+                placeholderTextColor={colors.textMuted}
+                style={[styles.searchInput, { color: colors.textPrimary }]}
               />
             </View>
-            <Pressable style={styles.filterBtn}>
-              <FilterIcon size={18} color="#6366f1" />
+            <Pressable style={[styles.filterBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <FilterIcon size={18} color={colors.accent} />
             </Pressable>
           </View>
 
           {/* Category Chips */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.catScroll}>
-            {categories.map((c) => (
-              <Pressable
-                key={c}
-                onPress={() => setSelectedCategory(c)}
-                style={[
-                  styles.catChip,
-                  {
-                    backgroundColor: c === selectedCategory ? "#0f172a" : "#ffffff",
-                    borderColor: c === selectedCategory ? "#0f172a" : "#e2e8f0",
-                  },
-                ]}
-              >
-                <Text style={{ color: c === selectedCategory ? "#ffffff" : "#64748b", fontSize: 12, fontWeight: "500" }}>
-                  {c}
-                </Text>
-              </Pressable>
-            ))}
+            {categories.map((c) => {
+              const isSelected = c === selectedCategory;
+              return (
+                <Pressable
+                  key={c}
+                  onPress={() => setSelectedCategory(c)}
+                  style={[
+                    styles.catChip,
+                    {
+                      backgroundColor: isSelected ? colors.accent : colors.cardBg,
+                      borderColor: isSelected ? colors.accent : colors.cardBorder,
+                    },
+                  ]}
+                >
+                  <Text style={{ color: isSelected ? "#ffffff" : colors.textMuted, fontSize: 12, fontWeight: "500" }}>
+                    {c}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </ScrollView>
 
           {/* Transaction List */}
           <View style={styles.txList}>
             {filtered.map((t) => (
-              <View key={t.id} style={styles.txCard}>
-                <View style={[styles.txIconBg, { backgroundColor: `${t.color}15` }]}>
+              <View key={t.id} style={[styles.txCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                <View style={[styles.txIconBg, { backgroundColor: `${t.color}18` }]}>
                   <Text style={{ fontSize: 20 }}>{t.icon}</Text>
                 </View>
                 <View style={styles.txMeta}>
-                  <Text style={styles.txMerchant} numberOfLines={1}>{t.merchant}</Text>
+                  <Text style={[styles.txMerchant, { color: colors.textPrimary }]} numberOfLines={1}>{t.merchant}</Text>
                   <View style={styles.txTagRow}>
-                    <View style={[styles.txBadge, { backgroundColor: `${t.color}15` }]}>
+                    <View style={[styles.txBadge, { backgroundColor: `${t.color}18` }]}>
                       <Text style={{ fontSize: 10, fontWeight: "500", color: t.color }}>{t.category}</Text>
                     </View>
-                    <Text style={styles.txDate}>{t.date}</Text>
+                    <Text style={[styles.txDate, { color: colors.textMuted }]}>{t.date}</Text>
                   </View>
                 </View>
-                <Text style={[styles.txAmount, { color: t.amount > 0 ? "#059669" : "#0f172a" }]}>
+                <Text style={[styles.txAmount, { color: t.amount > 0 ? "#059669" : colors.textPrimary }]}>
                   {t.amount > 0 ? "+" : ""}₹{Math.abs(t.amount).toLocaleString("en-IN")}
                 </Text>
               </View>
@@ -136,12 +141,12 @@ export default function Transactions() {
       {/* Add Transaction Sheet Modal */}
       <Modal visible={showAdd} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHandle} />
+          <View style={[styles.modalContent, { backgroundColor: colors.modalBg }]}>
+            <View style={[styles.modalHandle, { backgroundColor: colors.cardBorder }]} />
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Transaction</Text>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Add Transaction</Text>
               <Pressable onPress={() => setShowAdd(false)}>
-                <CloseIcon size={20} color="#94a3b8" />
+                <CloseIcon size={20} color={colors.textMuted} />
               </Pressable>
             </View>
 
@@ -151,32 +156,32 @@ export default function Transactions() {
                   key={t}
                   style={[
                     styles.typeTab,
-                    { backgroundColor: t === "Expense" ? "#0f172a" : "#f1f5f9" },
+                    { backgroundColor: t === "Expense" ? colors.accent : colors.isDark ? "#2a2a36" : "#f1f5f9" },
                   ]}
                 >
-                  <Text style={{ color: t === "Expense" ? "#ffffff" : "#64748b", fontSize: 14, fontWeight: "500" }}>{t}</Text>
+                  <Text style={{ color: t === "Expense" ? "#ffffff" : colors.textMuted, fontSize: 14, fontWeight: "500" }}>{t}</Text>
                 </Pressable>
               ))}
             </View>
 
-            <View style={styles.amountDisplay}>
-              <Text style={styles.currencySymbol}>₹</Text>
-              <Text style={styles.amountBig}>0</Text>
+            <View style={[styles.amountDisplay, { backgroundColor: colors.isDark ? "#181820" : "#f8fafc" }]}>
+              <Text style={[styles.currencySymbol, { color: colors.textMuted }]}>₹</Text>
+              <Text style={[styles.amountBig, { color: colors.textPrimary }]}>0</Text>
             </View>
 
             {["Merchant / Payee", "Category", "Date", "Description"].map((label) => (
               <View key={label} style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>{label}</Text>
+                <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{label}</Text>
                 <TextInput
                   placeholder={label}
-                  placeholderTextColor="#94a3b8"
-                  style={styles.modalInput}
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
                 />
               </View>
             ))}
 
             <Pressable onPress={() => setShowAdd(false)} style={styles.saveBtn}>
-              <LinearGradient colors={["#0f172a", "#1e3a5f"]} style={styles.saveGradient}>
+              <LinearGradient colors={colors.headerBg as [string, string]} style={styles.saveGradient}>
                 <Text style={styles.saveText}>Save Transaction</Text>
               </LinearGradient>
             </Pressable>
@@ -188,7 +193,7 @@ export default function Transactions() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafc" },
+  container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingTop: 40, paddingBottom: 20 },
   topRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
   title: { fontSize: 20, fontWeight: "bold", color: "#ffffff" },
@@ -202,33 +207,33 @@ const styles = StyleSheet.create({
   summaryVal: { fontSize: 14, fontWeight: "bold", marginTop: 2 },
   body: { paddingHorizontal: 20, paddingTop: 16 },
   searchRow: { flexDirection: "row", gap: 8, marginBottom: 16 },
-  searchBox: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 12, height: 44, backgroundColor: "#ffffff", borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0" },
-  searchInput: { flex: 1, fontSize: 14, color: "#0f172a" },
-  filterBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: "#ffffff", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#e2e8f0" },
+  searchBox: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 12, height: 44, borderRadius: 12, borderWidth: 1 },
+  searchInput: { flex: 1, fontSize: 14 },
+  filterBtn: { width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center", borderWidth: 1 },
   catScroll: { flexDirection: "row", marginBottom: 16 },
   catChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, marginRight: 8 },
   txList: { gap: 8 },
-  txCard: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, backgroundColor: "#ffffff", borderRadius: 16, elevation: 1 },
+  txCard: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, borderRadius: 16, borderWidth: 1, elevation: 1 },
   txIconBg: { width: 44, height: 44, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   txMeta: { flex: 1 },
-  txMerchant: { fontSize: 14, fontWeight: "600", color: "#0f172a" },
+  txMerchant: { fontSize: 14, fontWeight: "600" },
   txTagRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
   txBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
-  txDate: { fontSize: 10, color: "#94a3b8" },
+  txDate: { fontSize: 10 },
   txAmount: { fontSize: 14, fontWeight: "bold" },
   modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
-  modalContent: { backgroundColor: "#ffffff", borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 },
-  modalHandle: { width: 40, height: 4, borderRadius: 2, backgroundColor: "#e2e8f0", alignSelf: "center", marginBottom: 20 },
+  modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 },
+  modalHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: "center", marginBottom: 20 },
   modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
-  modalTitle: { fontSize: 18, fontWeight: "bold", color: "#0f172a" },
+  modalTitle: { fontSize: 18, fontWeight: "bold" },
   typeTabs: { flexDirection: "row", gap: 8, marginBottom: 20 },
   typeTab: { flex: 1, paddingVertical: 8, borderRadius: 12, alignItems: "center" },
-  amountDisplay: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8, backgroundColor: "#f8fafc", paddingVertical: 24, borderRadius: 16, marginBottom: 20 },
-  currencySymbol: { fontSize: 24, fontWeight: "bold", color: "#94a3b8" },
-  amountBig: { fontSize: 36, fontWeight: "bold", color: "#0f172a" },
+  amountDisplay: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8, paddingVertical: 24, borderRadius: 16, marginBottom: 20 },
+  currencySymbol: { fontSize: 24, fontWeight: "bold" },
+  amountBig: { fontSize: 36, fontWeight: "bold" },
   inputGroup: { marginBottom: 12 },
-  inputLabel: { fontSize: 12, fontWeight: "600", color: "#64748b", marginBottom: 4 },
-  modalInput: { borderWidth: 1.5, borderColor: "#e2e8f0", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14, color: "#0f172a" },
+  inputLabel: { fontSize: 12, fontWeight: "600", marginBottom: 4 },
+  modalInput: { borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14 },
   saveBtn: { marginTop: 8, borderRadius: 16, overflow: "hidden" },
   saveGradient: { paddingVertical: 16, alignItems: "center" },
   saveText: { color: "#ffffff", fontSize: 14, fontWeight: "bold" },

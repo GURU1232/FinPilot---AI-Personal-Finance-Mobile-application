@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { notifications } from "../data/mockData";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Notifications() {
+  const { colors } = useTheme();
   const [list, setList] = useState(notifications);
 
   const markAllRead = () => {
@@ -15,9 +17,9 @@ export default function Notifications() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={{ paddingBottom: 100 }}>
       {/* Header */}
-      <LinearGradient colors={["#0f172a", "#1e3a5f"]} style={styles.header}>
+      <LinearGradient colors={colors.headerBg as [string, string]} style={styles.header}>
         <View style={styles.topRow}>
           <View>
             <Text style={styles.title}>Notifications</Text>
@@ -36,19 +38,22 @@ export default function Notifications() {
             onPress={() => toggleRead(n.id)}
             style={[
               styles.notifCard,
-              { backgroundColor: n.read ? "#ffffff" : "#f5f3ff", borderColor: n.read ? "#f1f5f9" : "#ede9fe" },
+              {
+                backgroundColor: n.read ? colors.cardBg : colors.isDark ? "#1e1b4b" : "#f5f3ff",
+                borderColor: n.read ? colors.cardBorder : colors.isDark ? "#312e81" : "#ede9fe",
+              },
             ]}
           >
-            <View style={[styles.iconBg, { backgroundColor: `${n.color}15` }]}>
+            <View style={[styles.iconBg, { backgroundColor: `${n.color}18` }]}>
               <Text style={{ fontSize: 20 }}>{n.icon}</Text>
             </View>
             <View style={{ flex: 1 }}>
               <View style={styles.cardTopRow}>
-                <Text style={styles.notifTitle}>{n.title}</Text>
-                {!n.read && <View style={styles.unreadDot} />}
+                <Text style={[styles.notifTitle, { color: colors.textPrimary }]}>{n.title}</Text>
+                {!n.read && <View style={[styles.unreadDot, { backgroundColor: colors.accent }]} />}
               </View>
-              <Text style={styles.notifMessage}>{n.message}</Text>
-              <Text style={styles.timeText}>{n.time}</Text>
+              <Text style={[styles.notifMessage, { color: colors.textSecondary }]}>{n.message}</Text>
+              <Text style={[styles.timeText, { color: colors.textMuted }]}>{n.time}</Text>
             </View>
           </Pressable>
         ))}
@@ -58,7 +63,7 @@ export default function Notifications() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafc" },
+  container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingTop: 40, paddingBottom: 24 },
   topRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   title: { fontSize: 20, fontWeight: "bold", color: "#ffffff" },
@@ -69,8 +74,8 @@ const styles = StyleSheet.create({
   notifCard: { flexDirection: "row", gap: 12, padding: 14, borderRadius: 16, borderWidth: 1, elevation: 1 },
   iconBg: { width: 40, height: 40, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   cardTopRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  notifTitle: { fontSize: 14, fontWeight: "600", color: "#0f172a" },
-  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#6366f1" },
-  notifMessage: { fontSize: 12, lineHeight: 18, color: "#64748b", marginTop: 4 },
-  timeText: { fontSize: 10, color: "#94a3b8", marginTop: 6 },
+  notifTitle: { fontSize: 14, fontWeight: "600" },
+  unreadDot: { width: 8, height: 8, borderRadius: 4 },
+  notifMessage: { fontSize: 12, lineHeight: 18, marginTop: 4 },
+  timeText: { fontSize: 10, marginTop: 6 },
 });

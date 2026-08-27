@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Svg, { Rect, Path } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { SparkleIcon } from "../components/ui/Icons";
 import { categorySpend, reportsMonthlyData } from "../data/mockData";
+import { useTheme } from "../context/ThemeContext";
 
-function BarChart() {
+function BarChart({ textMutedColor }: { textMutedColor: string }) {
   const max = Math.max(...reportsMonthlyData.map(d => Math.max(d.income, d.expenses)));
   return (
     <View style={styles.chartBox}>
@@ -16,7 +17,7 @@ function BarChart() {
               <View style={[styles.bar, { height: `${(d.income / max) * 100}%`, backgroundColor: "#10b981" }]} />
               <View style={[styles.bar, { height: `${(d.expenses / max) * 100}%`, backgroundColor: "#ef4444" }]} />
             </View>
-            <Text style={styles.barMonth}>{d.month}</Text>
+            <Text style={[styles.barMonth, { color: textMutedColor }]}>{d.month}</Text>
           </View>
         ))}
       </View>
@@ -24,7 +25,7 @@ function BarChart() {
   );
 }
 
-function DonutChart() {
+function DonutChart({ textPrimaryColor, textMutedColor }: { textPrimaryColor: string; textMutedColor: string }) {
   const size = 160;
   const cx = 80;
   const cy = 80;
@@ -57,21 +58,22 @@ function DonutChart() {
         ))}
       </Svg>
       <View style={styles.donutCenter}>
-        <Text style={styles.donutTotalLabel}>Spent</Text>
-        <Text style={styles.donutTotalVal}>₹34.5k</Text>
+        <Text style={[styles.donutTotalLabel, { color: textMutedColor }]}>Spent</Text>
+        <Text style={[styles.donutTotalVal, { color: textPrimaryColor }]}>₹34.5k</Text>
       </View>
     </View>
   );
 }
 
 export default function Reports() {
+  const { colors } = useTheme();
   const [monthIndex, setMonthIndex] = useState(0);
   const months = ["August 2024", "July 2024", "June 2024"];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={{ paddingBottom: 100 }}>
       {/* Header */}
-      <LinearGradient colors={["#0f172a", "#1e3a5f"]} style={styles.header}>
+      <LinearGradient colors={colors.headerBg as [string, string]} style={styles.header}>
         <View style={styles.topRow}>
           <Text style={styles.title}>Monthly Reports</Text>
         </View>
@@ -113,34 +115,34 @@ export default function Reports() {
 
       <View style={styles.body}>
         {/* Income vs Expenses Bar Chart */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Income vs Expenses</Text>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Income vs Expenses</Text>
             <View style={styles.legendRow}>
               <View style={styles.legendItem}>
                 <View style={[styles.legendDot, { backgroundColor: "#10b981" }]} />
-                <Text style={styles.legendText}>Income</Text>
+                <Text style={[styles.legendText, { color: colors.textMuted }]}>Income</Text>
               </View>
               <View style={styles.legendItem}>
                 <View style={[styles.legendDot, { backgroundColor: "#ef4444" }]} />
-                <Text style={styles.legendText}>Expenses</Text>
+                <Text style={[styles.legendText, { color: colors.textMuted }]}>Expenses</Text>
               </View>
             </View>
           </View>
-          <BarChart />
+          <BarChart textMutedColor={colors.textMuted} />
         </View>
 
         {/* Donut Category Spend */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Spending Distribution</Text>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Spending Distribution</Text>
           <View style={styles.donutRow}>
-            <DonutChart />
+            <DonutChart textPrimaryColor={colors.textPrimary} textMutedColor={colors.textMuted} />
             <View style={styles.categoryLegend}>
               {categorySpend.map((c) => (
                 <View key={c.category} style={styles.catLegendItem}>
                   <View style={[styles.legendDot, { backgroundColor: c.color }]} />
-                  <Text style={styles.catLegendName} numberOfLines={1}>{c.category}</Text>
-                  <Text style={styles.catLegendPct}>{c.percentage}%</Text>
+                  <Text style={[styles.catLegendName, { color: colors.textSecondary }]} numberOfLines={1}>{c.category}</Text>
+                  <Text style={[styles.catLegendPct, { color: colors.textPrimary }]}>{c.percentage}%</Text>
                 </View>
               ))}
             </View>
@@ -148,12 +150,12 @@ export default function Reports() {
         </View>
 
         {/* AI Executive Summary */}
-        <View style={styles.aiSummaryCard}>
+        <View style={[styles.aiSummaryCard, { backgroundColor: colors.isDark ? "#1e1b4b" : "#f5f3ff", borderColor: colors.isDark ? "#312e81" : "#ede9fe" }]}>
           <View style={styles.aiSummaryHeader}>
-            <SparkleIcon size={16} color="#7c3aed" />
-            <Text style={styles.aiSummaryTitle}>FinPilot Executive Summary</Text>
+            <SparkleIcon size={16} color={colors.accent} />
+            <Text style={[styles.aiSummaryTitle, { color: colors.accent }]}>FinPilot Executive Summary</Text>
           </View>
-          <Text style={styles.aiSummaryText}>
+          <Text style={[styles.aiSummaryText, { color: colors.textSecondary }]}>
             Great month! You saved 31% of your income — exceeding your 20% target. Your largest discretionary expense was Dining & Entertainment (₹7,500). Reallocating ₹2,000 from dining to your Emergency Fund will accelerate your target by 3 weeks.
           </Text>
         </View>
@@ -163,7 +165,7 @@ export default function Reports() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafc" },
+  container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingTop: 40, paddingBottom: 24 },
   topRow: { marginBottom: 16 },
   title: { fontSize: 20, fontWeight: "bold", color: "#ffffff" },
@@ -175,30 +177,30 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 10, color: "rgba(255,255,255,0.6)" },
   statVal: { fontSize: 14, fontWeight: "bold", marginTop: 4 },
   body: { paddingHorizontal: 20, paddingTop: 20, gap: 16 },
-  card: { backgroundColor: "#ffffff", borderRadius: 20, padding: 16, elevation: 1 },
+  card: { borderRadius: 20, padding: 16, borderWidth: 1, elevation: 1 },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  cardTitle: { fontSize: 14, fontWeight: "600", color: "#0f172a" },
+  cardTitle: { fontSize: 14, fontWeight: "600" },
   legendRow: { flexDirection: "row", gap: 12 },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 4 },
   legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText: { fontSize: 10, color: "#64748b" },
+  legendText: { fontSize: 10 },
   chartBox: { height: 120, paddingTop: 10 },
   chartBars: { flexDirection: "row", height: 90, alignItems: "flex-end", gap: 8 },
   chartCol: { flex: 1, alignItems: "center", gap: 4 },
   barPair: { flexDirection: "row", flex: 1, alignItems: "flex-end", gap: 3 },
   bar: { flex: 1, borderRadius: 3 },
-  barMonth: { fontSize: 9, color: "#94a3b8" },
+  barMonth: { fontSize: 9 },
   donutRow: { flexDirection: "row", alignItems: "center", gap: 16, marginTop: 12 },
   donutWrapper: { width: 160, height: 160, alignItems: "center", justifyContent: "center", position: "relative" },
   donutCenter: { position: "absolute", alignItems: "center" },
-  donutTotalLabel: { fontSize: 10, color: "#94a3b8" },
-  donutTotalVal: { fontSize: 18, fontWeight: "bold", color: "#0f172a" },
+  donutTotalLabel: { fontSize: 10 },
+  donutTotalVal: { fontSize: 18, fontWeight: "bold" },
   categoryLegend: { flex: 1, gap: 8 },
   catLegendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
-  catLegendName: { flex: 1, fontSize: 11, color: "#334155" },
-  catLegendPct: { fontSize: 11, fontWeight: "bold", color: "#0f172a" },
-  aiSummaryCard: { backgroundColor: "#f5f3ff", borderRadius: 20, padding: 16, borderWidth: 1, borderColor: "#ede9fe" },
+  catLegendName: { flex: 1, fontSize: 11 },
+  catLegendPct: { fontSize: 11, fontWeight: "bold" },
+  aiSummaryCard: { borderRadius: 20, padding: 16, borderWidth: 1 },
   aiSummaryHeader: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 },
-  aiSummaryTitle: { fontSize: 14, fontWeight: "600", color: "#7c3aed" },
-  aiSummaryText: { fontSize: 12, lineHeight: 20, color: "#334155" },
+  aiSummaryTitle: { fontSize: 14, fontWeight: "600" },
+  aiSummaryText: { fontSize: 12, lineHeight: 20 },
 });

@@ -161,3 +161,73 @@ export const ProfileIcon = ({ size = 22, color = "currentColor" }: IconProps) =>
     <Circle cx="12" cy="7" r="4" />
   </Svg>
 );
+
+export const PencilIcon = ({ size = 16, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Path d="M12 20h9" />
+    <Path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+  </Svg>
+);
+
+export const CrownIcon = ({ size = 18, color = "#eab308" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth={1}>
+    <Path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z" />
+  </Svg>
+);
+
+export const MoonIcon = ({ size = 20, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+  </Svg>
+);
+
+export const SunIcon = ({ size = 20, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Circle cx="12" cy="12" r="5" />
+    <Line x1="12" y1="1" x2="12" y2="3" />
+    <Line x1="12" y1="21" x2="12" y2="23" />
+    <Line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <Line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <Line x1="1" y1="12" x2="3" y2="12" />
+    <Line x1="21" y1="12" x2="23" y2="12" />
+    <Line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <Line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </Svg>
+);
+
+export const CameraIcon = ({ size = 18, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+    <Circle cx="12" cy="13" r="4" />
+  </Svg>
+);
+
+export const CalendarIcon = ({ size = 18, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <Line x1="16" y1="2" x2="16" y2="6" />
+    <Line x1="8" y1="2" x2="8" y2="6" />
+    <Line x1="3" y1="10" x2="21" y2="10" />
+  </Svg>
+);
+
+export const PaletteIcon = ({ size = 20, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Circle cx="13.5" cy="6.5" r=".5" fill={color} />
+    <Circle cx="17.5" cy="10.5" r=".5" fill={color} />
+    <Circle cx="8.5" cy="7.5" r=".5" fill={color} />
+    <Circle cx="6.5" cy="12.5" r=".5" fill={color} />
+    <Path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.16-.64-1.57-.4-.41-.66-.96-.66-1.58 0-1.24 1.01-2.25 2.25-2.25H18c2.21 0 4-1.79 4-4 0-5.51-4.49-10-10-10z" />
+  </Svg>
+);
+
+export const TrashIcon = ({ size = 18, color = "currentColor" }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Polyline points="3 6 5 6 21 6" />
+    <Path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+    <Line x1="10" y1="11" x2="10" y2="17" />
+    <Line x1="14" y1="11" x2="14" y2="17" />
+  </Svg>
+);
+
+
